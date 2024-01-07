@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -18,7 +19,7 @@ public class Exercise2Test extends CompanyDomainForKata
     @Tag("KATA")
     public void customerFromLondonPredicate()
     {
-        Predicate<Customer> predicate = null;
+        Predicate<Customer> predicate = customer -> customer.getCity().equals("London");
 
 
         Customer customerFromLondon = new Customer("test customer", "London");
@@ -32,7 +33,7 @@ public class Exercise2Test extends CompanyDomainForKata
     @Tag("KATA")
     public void doAnyCustomersLiveInLondon()
     {
-        boolean anyCustomersFromLondon = false;
+        boolean anyCustomersFromLondon = this.company.getCustomers().stream().anyMatch(customer -> customer.getCity().equals("London"));
 
         Assertions.assertTrue(anyCustomersFromLondon);
     }
@@ -41,7 +42,7 @@ public class Exercise2Test extends CompanyDomainForKata
     @Tag("KATA")
     public void doAllCustomersLiveInLondon()
     {
-        boolean allCustomersFromLondon = true;
+        boolean allCustomersFromLondon = this.company.getCustomers().stream().allMatch(customer -> customer.getCity().equals("London"));;
 
         Assertions.assertFalse(allCustomersFromLondon);
     }
@@ -50,7 +51,7 @@ public class Exercise2Test extends CompanyDomainForKata
     @Tag("KATA")
     public void howManyCustomersLiveInLondon()
     {
-        int numberOfCustomerFromLondon = 0;
+        int numberOfCustomerFromLondon = (int)this.company.getCustomers().stream().filter(customer -> customer.getCity().equals("London")).count();
 
         Assertions.assertEquals(2, numberOfCustomerFromLondon, "Should be 2 London customers");
     }
@@ -60,20 +61,20 @@ public class Exercise2Test extends CompanyDomainForKata
     public void getLondonCustomers()
     {
 
-        List<Customer> customersFromLondon = null;
+        List<Customer> customersFromLondon = this.company.getCustomers().stream().filter(customer -> customer.getCity().equals("London")).toList();
 
         var expectedNames = List.of("Fred", "Bill");
-        Assertions.assertEquals(expectedNames, customersFromLondon.stream().map(Customer::getName).sorted().toList());
+        Assertions.assertEquals(expectedNames, customersFromLondon.stream().map(Customer::getName).toList());
     }
 
     @Test
     @Tag("KATA")
     public void getCustomersWhoDontLiveInLondon()
     {
-        List<Customer> customersNotFromLondon = null;
+        List<Customer> customersNotFromLondon = this.company.getCustomers().stream().filter(customer -> !customer.getCity().equals("London")).toList();
 
         var expectedNames = List.of("Mary");
-        Assertions.assertEquals(expectedNames, List.of("EMPTY"));
+        Assertions.assertEquals(expectedNames, customersNotFromLondon.stream().map(Customer::getName).toList());
     }
 
     /**
@@ -83,10 +84,10 @@ public class Exercise2Test extends CompanyDomainForKata
     @Tag("KATA")
     public void getCustomersWhoDoAndDoNotLiveInLondon()
     {
-        List<Customer> customers = null;
+        List<Customer> customers = this.company.getCustomers().stream().filter(customer -> customer.getCity().equals("London") || !customer.getCity().equals("London")).toList();;
 
-        Assertions.assertEquals(List.of("Fred", "Bill"), List.of("VOID"));
-        Assertions.assertEquals(List.of("Mary"), List.of("VOID"));
+        Assertions.assertEquals(List.of("Fred", "Bill"), customers.stream().filter(customer -> customer.getCity().equals("London")).map(Customer::getName).toList());
+        Assertions.assertEquals(List.of("Mary"), customers.stream().filter(customer -> !customer.getCity().equals("London")).map(Customer::getName).toList());
     }
 
     /**
